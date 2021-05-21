@@ -1,0 +1,1 @@
+test Test0 [main=MainMachine]: {MainMachine, Worker, FaultInjector};
