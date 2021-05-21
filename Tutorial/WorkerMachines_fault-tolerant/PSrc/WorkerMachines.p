@@ -4,13 +4,19 @@ event ALL_WORK_DONE: int;
 event REQ_DONE: int; 
 event RESTART; 
 event PUSH_START;
+event INJECT_FAULT;
 
 machine FaultInjector {
-    var machines : seq[machine]; 
+    var machines : seq[machine];
+    var fault_count: int;
+    var max_faults_num: int; 
 
     start state Init {
         entry (targets: seq[machine]){
             var i : int; 
+
+            fault_count = 0; 
+            max_faults_num = 1000;
             
             i=0; 
             while (i < sizeof(targets)){
@@ -22,10 +28,16 @@ machine FaultInjector {
     }
 
     state InjectFaults {
-        on null do {
+        entry {
+            send this, INJECT_FAULT; 
+        }
+        on INJECT_FAULT do {
             var m : machine; 
             m = choose (machines); 
-            send m, RESTART; 
+            send m, RESTART;    
+            fault_count = fault_count + 1;
+            if (fault_count < max_faults_num)
+                send this, INJECT_FAULT;
         }
     }
 }
