@@ -16,7 +16,7 @@ machine FaultInjector {
             var i : int; 
 
             fault_count = 0; 
-            max_faults_num = 1000;
+            max_faults_num = 10;
             
             i=0; 
             while (i < sizeof(targets)){
@@ -101,6 +101,11 @@ machine MainMachine {
     }
 
     state Waiting {
+        entry { //Liveness bug fix
+            if (received_num == workers_num) {
+                send  this, ALL_WORK_DONE, term;
+            } 
+        }
         on WORK_DONE do (t: int) {
             if (t == term) {
                 received_num = received_num + 1;
