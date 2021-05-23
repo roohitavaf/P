@@ -72,6 +72,7 @@ machine MainMachine {
         }
 
         on PUSH_START push SendRequests;
+        ignore ALL_WORK_DONE;
     }
 
     state SendRequests {
@@ -90,6 +91,7 @@ machine MainMachine {
         on WORK_DONE do  {
             received_num = received_num + 1;
         }
+        ignore ALL_WORK_DONE;
     }
 
     state Waiting {
@@ -97,7 +99,7 @@ machine MainMachine {
             received_num = received_num + 1;
             assert received_num <= workers_num, format ("unexpected number of WORK_DONES: max {0}, but received {1}", workers_num, received_num);
             if (received_num == workers_num) {
-                raise  ALL_WORK_DONE;
+                send this,  ALL_WORK_DONE;
             } 
         }
 
