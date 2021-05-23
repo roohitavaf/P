@@ -45,12 +45,17 @@ machine MainMachine {
     }
 
     state Waiting {
+        entry { //liveness bug fix
+            if (received_num == workers_num) {
+                send this,  ALL_WORK_DONE;
+            } 
+        }
         on WORK_DONE do {
             received_num = received_num + 1;
             assert received_num <= workers_num, format ("unexpected number of WORK_DONES: max {0}, but received {1}", workers_num, received_num);
             assert received_num <= workers_num, format ("unexpected number of WORK_DONES: max {0}, but received {1}", workers_num, received_num);
             if (received_num == workers_num) {
-                raise  ALL_WORK_DONE;
+                send this,  ALL_WORK_DONE;
             } 
         }
 

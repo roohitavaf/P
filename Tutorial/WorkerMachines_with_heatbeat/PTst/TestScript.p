@@ -1,1 +1,1 @@
-test Test0 [main=MainMachine]: {MainMachine, Worker};
+test Test0 [main=MainMachine]: assert Liveness in {MainMachine, Worker};
